@@ -32,9 +32,8 @@ jobs:
 
       - name: Build (capturing output)
         run: |
+          set -o pipefail
           lake build 2>&1 | tee build.log
-          # Preserve exit status of lake (not tee)
-          exit ${PIPESTATUS[0]}
 
       - name: Upload build log
         if: always()
@@ -59,27 +58,26 @@ jobs:
       - name: Count real sorrys (from Lean warnings)
         id: sorry_count
         run: |
-          # Lean emits "warning: declaration uses 'sorry'" for each real sorry.
-          # This is Lean's own definition of "uses sorry" — gold standard.
-          SORRY_COUNT=$(grep -c "uses 'sorry'" build.log || echo 0)
-          echo "count=$SORRY_COUNT" >> $GITHUB_OUTPUT
-          echo "Real sorry count (from Lean): $SORRY_COUNT"
+          # Lean emits: warning: <file>:<line>:<col>: declaration uses `sorry`
+          # The word "sorry" is wrapped in BACKTICKS in Lean's output, not single quotes.
+          # `grep -c` returns 1 (not 0) when no matches found, so we use a safer pattern.
+          SORRY_COUNT=$(grep -c 'declaration uses .sorry.' build.log) || SORRY_COUNT=0
+          echo "count=${SORRY_COUNT}" >> $GITHUB_OUTPUT
+          echo "Real sorry count (from Lean warnings): ${SORRY_COUNT}"
 
       - name: List sorry warnings (with locations)
         run: |
           echo "=== Sorry warnings from Lean build ==="
-          grep -B1 "uses 'sorry'" build.log || echo "(none)"
+          grep 'declaration uses .sorry.' build.log || echo "(none)"
 
       - name: Count axioms (declarations beyond Lean core)
         id: axiom_count
         run: |
-          # Axioms are declared at module top-level with `axiom <name> : <type>`
-          # Source-grep is reliable here (axiom keyword has no docstring ambiguity).
           AXIOM_COUNT=$(grep -rn "^axiom " --include="*.lean" \
                         --exclude-dir=".lake" --exclude-dir="archive" . \
                         | wc -l)
-          echo "count=$AXIOM_COUNT" >> $GITHUB_OUTPUT
-          echo "Axiom count: $AXIOM_COUNT"
+          echo "count=${AXIOM_COUNT}" >> $GITHUB_OUTPUT
+          echo "Axiom count: ${AXIOM_COUNT}"
 
       - name: List axiom locations
         run: |
