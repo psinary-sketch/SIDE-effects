@@ -103,8 +103,29 @@ def to_modular : StructuralCoupling → ModularCoupling
 theorem to_modular_correct (sc : StructuralCoupling) (n : ℕ) :
     sc.eval n ↔ (to_modular sc).eval n := by
   induction sc with
-  | residue q a => sorry
-  | divisible q => sorry
+  | residue q a =>
+    simp only [StructuralCoupling.eval, to_modular, ModularCoupling.eval,
+               ModularCoupling.singleton, Finset.mem_singleton]
+    constructor
+    · intro h q_1 hq
+      subst hq
+      simp [h]
+    · intro h
+      have := h q rfl
+      simp only [Finset.mem_singleton] at this
+      exact this
+  | divisible q =>
+    simp only [StructuralCoupling.eval, to_modular, ModularCoupling.fromDivisible,
+               ModularCoupling.eval, ModularCoupling.singleton, Finset.mem_singleton]
+    constructor
+    · intro h q_1 hq
+      subst hq
+      simp only [Finset.mem_singleton]
+      exact (CharP.cast_eq_zero_iff (ZMod q_1) q_1 n).mpr h
+    · intro h
+      have := h q rfl
+      simp only [Finset.mem_singleton] at this
+      exact (CharP.cast_eq_zero_iff (ZMod q) q n).mp this
   | coprime m => sorry
   | conjunction l r ih_l ih_r => sorry
   | disjunction l r ih_l ih_r => sorry
