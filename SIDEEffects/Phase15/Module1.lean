@@ -87,6 +87,24 @@ def ModularCoupling.singleton (q : ℕ) (a : ZMod q) : ModularCoupling where
 def ModularCoupling.fromDivisible (q : ℕ) : ModularCoupling :=
   ModularCoupling.singleton q (0 : ZMod q)
 
+/-- The singleton modular coupling at modulus q with residue a is satisfied
+    by n iff (n : ZMod q) = a. Provides a clean rewrite that bypasses the
+    Eq.rec residue from the dependent allowed_residues field. Use this
+    helper instead of unfolding ModularCoupling.singleton manually in
+    to_modular_correct cases. -/
+lemma ModularCoupling.singleton_eval (q : ℕ) (a : ZMod q) (n : ℕ) :
+    (ModularCoupling.singleton q a).eval n ↔ (n : ZMod q) = a := by
+  simp only [ModularCoupling.eval, ModularCoupling.singleton, Finset.mem_singleton]
+  constructor
+  · intro h
+    have := h q rfl
+    simp only [Finset.mem_singleton] at this
+    exact this
+  · intro h q' hq'
+    subst hq'
+    simp only [Finset.mem_singleton]
+    exact h
+
 /-- Convert a StructuralCoupling to a ModularCoupling.
     Substantive for residue and divisible. Other cases sorry-pending
     with named discharge paths. -/
