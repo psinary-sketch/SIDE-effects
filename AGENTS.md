@@ -14,7 +14,7 @@ This file orients LLM agents and automated tooling to the repository's purpose, 
 
 The Lean 4 kernel for **SIDE framework consequences** beyond the Day 1 RH proof. Two layers:
 
-1. **Structural content** — 19 theorems formalizing abstract SIDE patterns (Mechanism Theorem variants, formation calculus consequences, framework-level identities). Compiles zero-sorry against Lean core (no Mathlib in this layer).
+1. **Structural content** — theorems formalizing abstract SIDE patterns (Mechanism Theorem variants, formation calculus consequences, framework-level identities). Compiles zero-sorry against Lean core (no Mathlib in this layer).
 
 2. **Phase 1.5 bridge modules** (`SIDEEffects/Phase15/`) — extension modules that prepare ground for Phase 2 publications. Currently houses **Module 1 — CRT Exhaustiveness** with active discharge work in progress.
 
@@ -55,7 +55,19 @@ CI workflow at `.github/workflows/audit.yml` runs `lake build` and emits a v2.1 
 
 ### Layer 1 — Structural content (stable, `SIDEEffects/`)
 
-19 theorems formalizing framework-level identities. Specific theorem names live in source files; see `lake env lean --print-modules` for the directory.
+`SIDEEffects/Structural.lean` formalizes the structural content for nine framework consequences. Each consequence is established by direct logical argument: SIDE exclusion engine, formation-seven baseline, plus per-domain content.
+
+Named theorems include:
+
+- **Yang-Mills mass gap layer**: `all_gapped`, `mass_gap`, `all_excluded`, `sectors_complete`, `gap_bounds`
+- **GRH layer**: `twist_cancels`, `formation_preserved_grh`, `grh_exclusion`
+- **Landau-Siegel layer**: `no_ls_zero`
+- **Additive-multiplicative / Type-D layer**: `no_type_d`, `no_conspiracy_twins`, `no_conspiracy_goldbach`, `no_conspiracy_sg`
+- **BSD layer**: `all_bound`, `sha_bounded`, `all_mismatch_absent`, `bsd_full`
+- **Artin layer**: `artin_from_grh` (via Hooley 1967)
+- **Shared engine**: `side_exclusion`, `formation_seven`
+
+`SIDEEffects/Milestones.lean` carries the analytic-existence statements that close via Mathlib infrastructure not yet bridged: `twin_primes_infinite` (Hardy-Littlewood), `goldbach` (circle method), `sophie_germain_infinite` (sieve density). These are explicitly named-sorry; each has a discharge-path comment naming the Mathlib infrastructure required.
 
 ### Layer 2 — Phase 1.5 bridge modules (`SIDEEffects/Phase15/`)
 
@@ -72,7 +84,7 @@ Substantive proofs landed:
 - **`to_modular_correct` for residue case** — discharged via `subst hq` + `simp [h]` pattern (commit `c31e1de`)
 - **`to_modular_correct` for divisible case** — discharged via `subst hq` + `CharP.cast_eq_zero_iff (ZMod q) q n` for ZMod-divisibility bridge (commit `c31e1de`)
 
-Theorems with named-sorry skeletons (7 remaining sorries):
+Theorems with named-sorry skeletons (each with a discharge-path comment in source identifying what's needed):
 - `to_modular.coprime`, `.conjunction`, `.disjunction` — `to_modular` function definitions; architectural decisions pending (multi-modulus design for coprime; ModularCondition := List ModularCoupling DNF refinement for disjunction)
 - `to_modular_correct.coprime`, `.conjunction`, `.disjunction`, `.shifted` — induction cases; coprime requires multi-modulus structure, conjunction requires intersection, disjunction requires DNF, shifted requires correctness fix
 
@@ -136,7 +148,7 @@ The 19 Layer-1 structural theorems back framework-level claims distributed acros
 
 ## Honest open status
 
-- 7 named sorries in Module 1 with discharge-path comments
+- Named sorries remain in Module 1 across the coprime, conjunction, disjunction, and shifted cases for both `to_modular` and `to_modular_correct`. Each has a discharge-path comment in source.
 - Module 1 coprime case requires multi-modulus design and Mathlib prime factorization machinery
 - Module 1 disjunction case requires architectural decision on `ModularCoupling` → `ModularCondition := List ModularCoupling` (DNF refinement)
 - Module 1 shifted case `to_modular` definition is currently mathematically wrong (returns `to_modular inner` instead of residue-adjusted); flagged in source header comments
