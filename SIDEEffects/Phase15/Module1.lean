@@ -1,65 +1,37 @@
 /-
   SIDE-effects Phase 1.5 — Module 1: CRT Exhaustiveness
-  =======================================================
-  Version 2: error fixes from first compile attempt.
-
-  Fixes from v1:
-    - Finset.not_mem_empty → by simp at h (lemma renamed in Mathlib
-      v4.30; simp form is API-drift-resistant)
-    - ModularCoupling.singleton dependent type — extract q' = q via
-      Finset.mem_singleton then subst before returning Finset (ZMod q)
-    - decreasing_by removed — inductive type structural recursion
-      auto-inferred by Lean
-    - shifted case: returns inner_modular without shift adjustment
-      (still wrong as a definition, but compiles; sorry note attached
-      to to_modular_correct.shifted case explains why)
-
-  Spec reference: SIDE_EFFECTS_PHASE_1_5_SPEC.md
-  Decision (Module 1): option (a) — inductive type representing
-  syntactic tree of arithmetic primitives.
-
-  Status of this file (v2):
-    - Definitions complete and compile
-    - to_modular function: residue + divisible cases substantive;
-      coprime, conjunction, disjunction, shifted as named sorry
-    - to_modular_correct: all cases sorry pending; discharge paths
-      named in comments
-    - crt_exhaustiveness: proved modulo to_modular_correct
-    - no_type_d_conspiracies: proved modulo crt_exhaustiveness
-
+  Version 3.1: end-to-end Option-1 closure (import + computability fixes).
+  Positivity in the constructors -> no conditional hypotheses. to_modular is the
+  single period-modulus coupling; correctness is one periodicity proof. The data
+  witness is noncomputable (classical decidability for the residue filter); the
+  theorems are unconditional.
   J. York Seale | ORCID: 0009-0008-7993-0310
-  PLACE TO STAND Research Programme — May 2026
 -/
 
-import Mathlib.Data.Nat.Prime.Basic
-import Mathlib.Data.ZMod.Basic
-import Mathlib.Data.Finset.Basic
+import Mathlib
 import SIDEEffects.Phase15.SIDEFramework
 
 namespace SIDEEffects.Phase15.Module1
 
-open SIDEFramework
-
-/-! ## §1.1 — The inductive StructuralCoupling tree -/
+/-! ## StructuralCoupling (positivity in the type) -/
 
 inductive StructuralCoupling : Type where
-  | residue (q : ℕ) (a : ZMod q) : StructuralCoupling
-  | divisible (q : ℕ) : StructuralCoupling
-  | coprime (m : ℕ) : StructuralCoupling
+  | residue (q : ℕ) (hq : 0 < q) (a : ZMod q) : StructuralCoupling
+  | divisible (q : ℕ) (hq : 0 < q) : StructuralCoupling
+  | coprime (m : ℕ) (hm : 0 < m) : StructuralCoupling
   | conjunction (left right : StructuralCoupling) : StructuralCoupling
   | disjunction (left right : StructuralCoupling) : StructuralCoupling
   | shifted (k : ℕ) (inner : StructuralCoupling) : StructuralCoupling
 
-/-- Evaluate a StructuralCoupling at a natural number n. -/
 def StructuralCoupling.eval : StructuralCoupling → ℕ → Prop
-  | .residue q a, n => (n : ZMod q) = a
-  | .divisible q, n => q ∣ n
-  | .coprime m, n => Nat.gcd n m = 1
+  | .residue q _ a, n => (n : ZMod q) = a
+  | .divisible q _, n => q ∣ n
+  | .coprime m _, n => Nat.gcd n m = 1
   | .conjunction l r, n => l.eval n ∧ r.eval n
   | .disjunction l r, n => l.eval n ∨ r.eval n
   | .shifted k inner, n => inner.eval (n + k)
 
-/-! ## §1.2 — ModularCoupling -/
+/-! ## ModularCoupling -/
 
 structure ModularCoupling : Type where
   moduli : Finset ℕ
@@ -68,94 +40,112 @@ structure ModularCoupling : Type where
 def ModularCoupling.eval (m : ModularCoupling) (n : ℕ) : Prop :=
   ∀ q, ∀ h : q ∈ m.moduli, (n : ZMod q) ∈ m.allowed_residues q h
 
-/-! ## §1.3 — Constructor helpers and to_modular -/
+/-! ## Period -/
 
-/-- Empty modular coupling: vacuously satisfied. -/
-def ModularCoupling.empty : ModularCoupling where
-  moduli := ∅
-  allowed_residues := fun _ h => by simp at h
+def StructuralCoupling.period : StructuralCoupling → ℕ
+  | .residue q _ _ => q
+  | .divisible q _ => q
+  | .coprime m _ => m
+  | .conjunction l r => Nat.lcm l.period r.period
+  | .disjunction l r => Nat.lcm l.period r.period
+  | .shifted _ inner => inner.period
 
-/-- Singleton modular coupling: at modulus q, only residue a allowed. -/
-def ModularCoupling.singleton (q : ℕ) (a : ZMod q) : ModularCoupling where
-  moduli := {q}
-  allowed_residues := fun q' h => by
-    rw [Finset.mem_singleton] at h
-    subst h
-    exact {a}
+theorem StructuralCoupling.period_pos : ∀ sc : StructuralCoupling, 0 < sc.period := by
+  intro sc
+  induction sc with
+  | residue q hq a => simpa [StructuralCoupling.period] using hq
+  | divisible q hq => simpa [StructuralCoupling.period] using hq
+  | coprime m hm => simpa [StructuralCoupling.period] using hm
+  | conjunction l r ihl ihr =>
+      simp only [StructuralCoupling.period]
+      exact Nat.pos_of_ne_zero (Nat.lcm_ne_zero ihl.ne' ihr.ne')
+  | disjunction l r ihl ihr =>
+      simp only [StructuralCoupling.period]
+      exact Nat.pos_of_ne_zero (Nat.lcm_ne_zero ihl.ne' ihr.ne')
+  | shifted k inner ih => simpa [StructuralCoupling.period] using ih
 
-/-- Single-divisibility modular coupling: q ∣ n ↔ (n : ZMod q) = 0. -/
-def ModularCoupling.fromDivisible (q : ℕ) : ModularCoupling :=
-  ModularCoupling.singleton q (0 : ZMod q)
+/-! ## Periodicity -/
 
-/-- The singleton modular coupling at modulus q with residue a is satisfied
-    by n iff (n : ZMod q) = a. Provides a clean rewrite that bypasses the
-    Eq.rec residue from the dependent allowed_residues field. Use this
-    helper instead of unfolding ModularCoupling.singleton manually in
-    to_modular_correct cases. -/
-lemma ModularCoupling.singleton_eval (q : ℕ) (a : ZMod q) (n : ℕ) :
-    (ModularCoupling.singleton q a).eval n ↔ (n : ZMod q) = a := by
-  simp only [ModularCoupling.eval, ModularCoupling.singleton, Finset.mem_singleton]
+theorem periodic_lift {f : ℕ → Prop} {p L : ℕ}
+    (hp : ∀ n, f n ↔ f (n % p)) (hpL : p ∣ L) :
+    ∀ n, f n ↔ f (n % L) := by
+  intro n
+  rw [hp n, hp (n % L), Nat.mod_mod_of_dvd n hpL]
+
+theorem StructuralCoupling.eval_periodic :
+    ∀ sc : StructuralCoupling, ∀ n, sc.eval n ↔ sc.eval (n % sc.period) := by
+  intro sc
+  induction sc with
+  | residue q hq a =>
+      intro n
+      simp only [StructuralCoupling.eval, StructuralCoupling.period]
+      have hcast : (n : ZMod q) = ((n % q : ℕ) : ZMod q) := by
+        conv_lhs => rw [← Nat.mod_add_div n q]
+        push_cast
+        rw [ZMod.natCast_self]
+        ring
+      rw [hcast]
+  | divisible q hq =>
+      intro n; simp only [StructuralCoupling.eval, StructuralCoupling.period]
+      exact (Nat.dvd_mod_iff (dvd_refl q)).symm
+  | coprime m hm =>
+      intro n; simp only [StructuralCoupling.eval, StructuralCoupling.period]
+      rw [Nat.gcd_comm n m, Nat.gcd_rec]
+  | conjunction l r ihl ihr =>
+      intro n; simp only [StructuralCoupling.eval, StructuralCoupling.period]
+      rw [periodic_lift ihl (Nat.dvd_lcm_left l.period r.period) n,
+          periodic_lift ihr (Nat.dvd_lcm_right l.period r.period) n]
+  | disjunction l r ihl ihr =>
+      intro n; simp only [StructuralCoupling.eval, StructuralCoupling.period]
+      rw [periodic_lift ihl (Nat.dvd_lcm_left l.period r.period) n,
+          periodic_lift ihr (Nat.dvd_lcm_right l.period r.period) n]
+  | shifted k inner ih =>
+      intro n; simp only [StructuralCoupling.eval, StructuralCoupling.period]
+      rw [ih (n + k), ih ((n % inner.period) + k)]
+      have he : (n + k) % inner.period = ((n % inner.period) + k) % inner.period := by
+        simp [Nat.add_mod]
+      rw [he]
+
+/-! ## Single-modulus coupling for a periodic predicate (classical filter) -/
+
+noncomputable def ofPeriodic (L : ℕ) (hL : 0 < L) (P : ℕ → Prop) :
+    ModularCoupling where
+  moduli := {L}
+  allowed_residues := fun q hq =>
+    haveI : NeZero q := ⟨by rw [Finset.mem_singleton] at hq; subst hq; exact hL.ne'⟩
+    haveI : DecidablePred (fun r : ZMod q => P r.val) := Classical.decPred _
+    Finset.univ.filter (fun r : ZMod q => P r.val)
+
+theorem ofPeriodic_eval (L : ℕ) (hL : 0 < L) (P : ℕ → Prop)
+    (hper : ∀ n, P n ↔ P (n % L)) (n : ℕ) :
+    (ofPeriodic L hL P).eval n ↔ P n := by
+  haveI : NeZero L := ⟨hL.ne'⟩
+  unfold ModularCoupling.eval
   constructor
   · intro h
-    have := h q rfl
-    simp only [Finset.mem_singleton] at this
-    exact this
-  · intro h q' hq'
+    have hm := h L (Finset.mem_singleton_self L)
+    simp only [ofPeriodic, Finset.mem_filter, Finset.mem_univ, true_and] at hm
+    rw [ZMod.val_natCast] at hm
+    exact (hper n).mpr hm
+  · intro hP q hq
+    have hq' : q = L := Finset.mem_singleton.mp hq
     subst hq'
-    simp only [Finset.mem_singleton]
-    exact h
+    simp only [ofPeriodic, Finset.mem_filter, Finset.mem_univ, true_and]
+    rw [ZMod.val_natCast]
+    exact (hper n).mp hP
 
-/-- Convert a StructuralCoupling to a ModularCoupling.
-    Substantive for residue and divisible. Other cases sorry-pending
-    with named discharge paths. -/
-def to_modular : StructuralCoupling → ModularCoupling
-  | .residue q a => ModularCoupling.singleton q a
-  | .divisible q => ModularCoupling.fromDivisible q
-  | .coprime _m => sorry
-  | .conjunction _l _r => sorry
-  | .disjunction _l _r => sorry
-  | .shifted _k inner => to_modular inner
+/-! ## to_modular and exhaustiveness (unconditional) -/
 
-/-! ## §1.4 — to_modular_correct theorem -/
+noncomputable def to_modular (sc : StructuralCoupling) : ModularCoupling :=
+  ofPeriodic sc.period sc.period_pos sc.eval
 
 theorem to_modular_correct (sc : StructuralCoupling) (n : ℕ) :
-    sc.eval n ↔ (to_modular sc).eval n := by
-  induction sc with
-  | residue q a =>
-    simp only [StructuralCoupling.eval, to_modular, ModularCoupling.eval,
-               ModularCoupling.singleton, Finset.mem_singleton]
-    constructor
-    · intro h q_1 hq
-      subst hq
-      simp [h]
-    · intro h
-      have := h q rfl
-      simp only [Finset.mem_singleton] at this
-      exact this
-  | divisible q =>
-    simp only [StructuralCoupling.eval, to_modular, ModularCoupling.fromDivisible,
-               ModularCoupling.eval, ModularCoupling.singleton, Finset.mem_singleton]
-    constructor
-    · intro h q_1 hq
-      subst hq
-      simp only [Finset.mem_singleton]
-      exact (CharP.cast_eq_zero_iff (ZMod q_1) q_1 n).mpr h
-    · intro h
-      have := h q rfl
-      simp only [Finset.mem_singleton] at this
-      exact (CharP.cast_eq_zero_iff (ZMod q) q n).mp this
-  | coprime m => sorry
-  | conjunction l r ih_l ih_r => sorry
-  | disjunction l r ih_l ih_r => sorry
-  | shifted k inner ih_inner => sorry
-
-/-! ## §1.5 — crt_exhaustiveness corollary -/
+    sc.eval n ↔ (to_modular sc).eval n :=
+  (ofPeriodic_eval sc.period sc.period_pos sc.eval sc.eval_periodic n).symm
 
 theorem crt_exhaustiveness (sc : StructuralCoupling) :
     ∃ m : ModularCoupling, ∀ n : ℕ, sc.eval n ↔ m.eval n :=
   ⟨to_modular sc, fun n => to_modular_correct sc n⟩
-
-/-! ## §1.6 — Type C / Type D distinction -/
 
 def TypeD : Type :=
   { sc : StructuralCoupling //
@@ -163,7 +153,6 @@ def TypeD : Type :=
 
 theorem no_type_d_conspiracies : IsEmpty TypeD := by
   refine ⟨fun ⟨sc, h_no_modular⟩ => ?_⟩
-  obtain ⟨m, hm⟩ := crt_exhaustiveness sc
-  exact h_no_modular ⟨m, hm⟩
+  exact h_no_modular (crt_exhaustiveness sc)
 
 end SIDEEffects.Phase15.Module1
