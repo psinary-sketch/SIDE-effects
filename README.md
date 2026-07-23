@@ -109,7 +109,7 @@ The migration history is the programme's progress record.
 ## Companion repositories
 
 - [SIDE-kernel](https://github.com/psinary-sketch/SIDE-kernel) —
-  the RH proof (560 declarations, 0 sorry, 0 axioms)
+  the RH proof (cited by named terminal: the three route terminals at pinned commits, `{propext, Classical.choice, Quot.sound}`, 0 sorry)
 - [SIDE-grh-transfer](https://github.com/psinary-sketch/SIDE-grh-transfer) —
   the genuine GRH cascade (real `DirichletCharacter ℂ n` exclusions)
 - [SIDE-cosmo](https://github.com/psinary-sketch/SIDE-cosmo) —
