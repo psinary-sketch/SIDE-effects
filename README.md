@@ -1,9 +1,9 @@
 # SIDE-effects
 
 Lean 4 kernel for the SIDE Exclusion method: the abstract exclusion
-engine, a genuine Type-D exclusion via CRT exhaustiveness, the open
-additive-prime milestones, and an honest record of retired
-framework-consequence skeletons.
+engine, a genuine Type-D exclusion via CRT exhaustiveness, the graded
+ladder of exhaustiveness licenses, the open additive-prime milestones,
+and an honest record of retired framework-consequence skeletons.
 
 This kernel is the breadth-demonstration arm of the SIDE programme.
 The central Riemann Hypothesis proof lives in
@@ -15,6 +15,22 @@ transfer here — not a verification of every named consequence (see the
 retirement note below).
 
 ## Architecture
+
+### `SIDEEffects/ExhaustivenessLicense.lean` — the graded ladder
+
+The SIDE E-condition asks whether a mechanism catalogue is exhaustive. This module compiles the **ordered
+ladder of licenses** an exclusion instance can carry for that exhaustiveness, and grades the programme's own
+instances against it:
+
+`theorem_` (Ostrowski-class) > `search` (Hodge-class) > `forcedOrUnderdetermined` (T7-class) > `none`
+
+**The grades are not stipulated.** `Grade.rank` is a function, the order derives from it, the ladder facts
+are proved, and each instance's grade is *computed* by `decide`/`rfl` — never asserted. Axiom-free; core
+Lean only, no Mathlib, no `native_decide`.
+
+**The one open point is labelled as one.** `EDifficultyTop` — the bridge from the ladder's top grade to the
+difficulty theory — is carried as a **named premise (`INTERFACES`), open, and never proved here.** It is a
+hypothesis the module takes, not a result it claims.
 
 ### `SIDEEffects/Phase15/SIDEFramework.lean` — the method engine
 
