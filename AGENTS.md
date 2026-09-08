@@ -170,3 +170,57 @@ The 19 Layer-1 structural theorems back framework-level claims distributed acros
 J. York Seale, ORCID [0009-0008-7993-0310](https://orcid.org/0009-0008-7993-0310). Via GitHub (issues, PRs) on this repository.
 
 **:: → · ← ::**
+
+<!-- b368 currency block: layer-1 export list vs source -->
+
+## Currency of the Layer-1 export list — checked 2026-09-08 against `afa9ccf`
+
+*Appended, not edited. Nothing above this line has been changed. This block records the state of the "Theorems exported" list above as measured against the source at ref `main` = `afa9ccfbddc21e5bbd5ee2a4cbdf23f6a88498dd`, so a reader meets the measurement at the same time as the claim.*
+
+**Of the 20 names the Layer-1 list above exports, 2 are declared in this kernel's own `.lean` files and 18 are not.** The 18 that are not were **retired** — each existed and was removed; none was invented, and none has a successor under another name in this kernel.
+
+### Present in the source
+
+- `no_type_d` — declared at `SIDEEffects/Structural.lean:54`. Axiom profile: **NO PRINTED PROFILE** (this kernel carries no printed profile file; none was computed here).
+- `formation_seven` — declared at `SIDEEffects/Structural.lean:41`. Axiom profile: **NO PRINTED PROFILE** (this kernel carries no printed profile file; none was computed here).
+
+### Retired, and named as retired by the retirement ledger
+
+The ledger is the comment block headed `RETIREMENT LEDGER (audit Phase S.2–S.4)` in `SIDEEffects/Structural.lean`. These names appear in it explicitly:
+
+- `mass_gap`
+- `gap_bounds`
+- `twist_cancels`
+- `grh_exclusion`
+- `no_ls_zero`
+- `no_conspiracy_twins`
+- `sha_bounded`
+- `bsd_full`
+- `artin_from_grh`
+
+### Retired, but **not named** by the ledger — covered only by their layer's entry
+
+These were removed too — the kernel's own `.lean` history shows each was present and is not now — but the ledger's entry for their layer does not list them by name. **The ledger is accurate about what it says and incomplete about what it names.**
+
+- `all_gapped` — the ledger's entry for the Yang-Mills mass gap layer does not name it
+- `all_excluded` — the ledger's entry for the Yang-Mills mass gap layer does not name it
+- `sectors_complete` — the ledger's entry for the Yang-Mills mass gap layer does not name it
+- `formation_preserved_grh` — the ledger's entry for the GRH layer does not name it
+- `no_conspiracy_goldbach` — the ledger's entry for the Additive-multiplicative / Type-D layer does not name it
+- `no_conspiracy_sg` — the ledger's entry for the Additive-multiplicative / Type-D layer does not name it
+- `all_bound` — the ledger's entry for the BSD layer does not name it
+- `all_mismatch_absent` — the ledger's entry for the BSD layer does not name it
+
+### Retired, with **no ledger entry for their layer at all**
+
+For the Shared engine the ledger has no entry. Neither these declarations nor their layer is recorded in it, and the repository's own `.lean` history — which shows each present in an earlier commit and absent now — is the whole of the evidence that they existed. **This is a sharper silence than the group above: there the ledger omits a name, here it omits a whole layer.**
+
+- `side_exclusion` — NO LEDGER ENTRY FOR THIS LAYER; evidenced by the repository's own history
+
+### What this block does and does not do
+
+**It does not export anything.** Every name above appears under a status, not as an available theorem. **The list above this block is left exactly as it was**; this block is the currency note beside it, on the append-only pattern the programme's papers repository uses for its own ledgers.
+
+**It does not retire, restore, rename or repair anything.** No `.lean` file was touched, no build was run, and no axiom profile was computed. **It does not claim the retirements were right** — only that they happened, and where they are recorded.
+
+*Measured and appended by the PLACE TO STAND research seat, act b368 (2026-09-08), from this repository's own files at ref `main` = `afa9ccfbddc21e5bbd5ee2a4cbdf23f6a88498dd`. The measurement is reproducible: read the Layer-1 list, extract its backticked names, and search this kernel's six `.lean` files for a declaration of each.*
