@@ -59,13 +59,9 @@ CI workflow at `.github/workflows/audit.yml` runs `lake build` and emits a v2.1 
 
 Named theorems include:
 
-- **Yang-Mills mass gap layer**: `all_gapped`, `mass_gap`, `all_excluded`, `sectors_complete`, `gap_bounds`
-- **GRH layer**: `twist_cancels`, `formation_preserved_grh`, `grh_exclusion`
-- **Landau-Siegel layer**: `no_ls_zero`
-- **Additive-multiplicative / Type-D layer**: `no_type_d`, `no_conspiracy_twins`, `no_conspiracy_goldbach`, `no_conspiracy_sg`
-- **BSD layer**: `all_bound`, `sha_bounded`, `all_mismatch_absent`, `bsd_full`
-- **Artin layer**: `artin_from_grh` (via Hooley 1967)
-- **Shared engine**: `side_exclusion`, `formation_seven`
+- **Additive-multiplicative / Type-D layer**: `no_type_d`
+- **Shared engine**: `formation_seven`
+- **Every other layer this list once named**: no theorem of this kernel. Those names were retired; they are preserved verbatim, with what the retirement ledger does and does not say about them, in the note at the foot of this file.
 
 `SIDEEffects/Milestones.lean` carries the analytic-existence statements that close via Mathlib infrastructure not yet bridged: `twin_primes_infinite` (Hardy-Littlewood), `goldbach` (circle method), `sophie_germain_infinite` (sieve density). These are explicitly named-sorry; each has a discharge-path comment naming the Mathlib infrastructure required.
 
@@ -224,3 +220,44 @@ For the Shared engine the ledger has no entry. Neither these declarations nor th
 **It does not retire, restore, rename or repair anything.** No `.lean` file was touched, no build was run, and no axiom profile was computed. **It does not claim the retirements were right** — only that they happened, and where they are recorded.
 
 *Measured and appended by the PLACE TO STAND research seat, act b368 (2026-09-08), from this repository's own files at ref `main` = `afa9ccfbddc21e5bbd5ee2a4cbdf23f6a88498dd`. The measurement is reproducible: read the Layer-1 list, extract its backticked names, and search this kernel's six `.lean` files for a declaration of each.*
+
+<!-- b369 (R4): the original list preserved verbatim, and the list repaired -->
+
+## The Layer-1 export list as it stood at `5530d7c`, preserved verbatim — and repaired above
+
+*Ruling (R4), 2026-09-08: **append-only is right for a ledger, where a reader reads the file; it is wrong for a list, where a reader reads the list.** The list above has therefore been **repaired in place**, and the original is preserved here, in the same file, quoted verbatim before the edit was made.*
+
+### The original rows, verbatim — quoted here, and nowhere used as an export list
+
+```markdown
+- **Yang-Mills mass gap layer**: `all_gapped`, `mass_gap`, `all_excluded`, `sectors_complete`, `gap_bounds`
+- **GRH layer**: `twist_cancels`, `formation_preserved_grh`, `grh_exclusion`
+- **Landau-Siegel layer**: `no_ls_zero`
+- **Additive-multiplicative / Type-D layer**: `no_type_d`, `no_conspiracy_twins`, `no_conspiracy_goldbach`, `no_conspiracy_sg`
+- **BSD layer**: `all_bound`, `sha_bounded`, `all_mismatch_absent`, `bsd_full`
+- **Artin layer**: `artin_from_grh` (via Hooley 1967)
+- **Shared engine**: `side_exclusion`, `formation_seven`
+```
+
+Of the 20 names those rows exported, **2 are declared in this kernel's own `.lean` files and 18 are not** — re-derived at ref `main` = `5530d7c327e0d4d57b408fd3fb24be68f5c98722`, pinned against `ls-remote`, by extracting the backticked names and searching for a declaration of each. Every absent name existed and was removed; **none was invented, and none has a successor under another name in this kernel.**
+
+### What the retirement ledger says, and where it says nothing
+
+The ledger is the comment block headed `RETIREMENT LEDGER (audit Phase S.2–S.4)` in `SIDEEffects/Structural.lean`. **It does not speak for all of them, and this note does not speak for it.**
+
+- **Named outright (10):** `mass_gap`, `gap_bounds`, `twist_cancels`, `grh_exclusion`, `no_ls_zero`, `no_conspiracy_twins`, `sha_bounded`, `bsd_full`, `artin_from_grh`, `side_exclusion`.
+- **Named only by the ledger's slash abbreviation (2):** `no_conspiracy_goldbach`, `no_conspiracy_sg` — the ledger writes `no_conspiracy_twins/goldbach/sg`. **Reading that as naming these is a judgement, not a string match**, so they are listed apart rather than folded in with the names it writes out.
+- **Covered only by their layer's entry (6):** `all_gapped`, `all_excluded`, `sectors_complete`, `formation_preserved_grh`, `all_bound`, `all_mismatch_absent` — the entry records that the layer's skeletons were retired without listing these by name. Their presence in an earlier commit and their absence now are visible in this repository's own history.
+- **Not covered at all (0):** **none — every retired name is reached by the ledger, by its own name, by its abbreviation, or through its layer's entry.**
+
+**Why the reason is not given here.** For no name in any group above does this kernel record *why* it went beyond what the entries quoted say. **This note does not supply one.** Ruling (R5): where the record is silent, the silence is reported rather than filled.
+
+### What this block does and does not do
+
+**It preserves; it does not restore.** The rows above are a quotation of a past state, not an export list. No name in them is available as a theorem.
+
+**It does not retire, rename or repair anything in the source.** No `.lean` file was touched, no build was run, and no axiom profile was computed. **It does not claim the retirements were right** — only that they happened, and how far the kernel's own record accounts for them.
+
+**And it supersedes two sentences in the block below it.** b368's currency note says that nothing above it had been changed and that the list was left exactly as it was. **Both were true when b368 wrote them and neither is true now**: ruling (R4) reversed the disposition, not the measurement. b368's block is left exactly as b368 wrote it; this paragraph is the correction, because a past record is named and superseded, never rewritten.
+
+*Measured, preserved and repaired by the PLACE TO STAND research seat, act b369 (2026-09-08), from this repository's own files at ref `main` = `5530d7c327e0d4d57b408fd3fb24be68f5c98722`.*
