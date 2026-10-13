@@ -18,11 +18,9 @@ The four grades, strongest first:
 * `none` — **NONE.** No exhaustiveness license: no theorem, no terminating search, no forcing.
 
 **Salt-check discipline.** The grades are NOT axiom-stipulated. `Grade.rank` is a function; the order
-`Grade.le` derives from it; the ladder facts (`theorem_is_top`, `ladder_strict`) are proved. Each
-corpus instance carries its factual `Evidence`, and its grade is *computed* by `grade` and proved by
-`decide`/`rfl` — never asserted. The **only** open point is the E-Difficulty biconditional
-(`EDifficultyTop`), carried as a **named premise** (INTERFACES), never proved here: it is the bridge
-from the ladder's top grade to the difficulty theory (E-Difficulty Level 1, TYPE-I discharge).
+`Grade.le` derives from it; the ladder facts (`theorem_is_top`, `ladder_strict`) are proved. Each corpus instance carries hand-set Evidence bits (data, asserted), and its grade is computed from them by `grade`
+and proved by rfl; besides the named premise EDifficultyTop, RH's hasClassificationTheorem = true records the open
+exhaustiveness of the catalogue at ξ as the reading, not a compiled certificate.
 
 `theorem` throughout (vanilla-build law); core Lean only, no Mathlib, no `native_decide`.
 -/
@@ -96,9 +94,9 @@ def grade (e : Evidence) : Grade :=
 
 /-! ## The corpus's own instances as inhabitants, with their grades computed -/
 
-/-- **RH** — the seven-class catalogue's exhaustiveness rests on classification theorems
-    (Ostrowski n₂=3, ring classification n₁=2, Cartan B n₃=2, Conservation/Tate n₄=0). THEOREM-grade,
-    conditional on `h2` at the totality register — the conditionality is the E-Difficulty bridge below. -/
+/-- **RH** — the Evidence bits are set to true by hand on the programme's reading (Ostrowski n₂=3, ring classification
+n₁=2, Cartan B n₃=2, Conservation/Tate n₄=0); the catalogue's exhaustiveness at ξ is the open clause, not certified
+here, so the THEOREM grade computed from these bits records the reading. -/
 def RH_evidence : Evidence := ⟨true, true, true⟩
 
 /-- **Hodge** — exhaustiveness search-established (Hodge Conservation predicts termination; no closed
