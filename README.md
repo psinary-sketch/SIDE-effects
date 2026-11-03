@@ -1,9 +1,20 @@
 # SIDE-effects
 
-Lean 4 kernel for the SIDE Exclusion method: the abstract exclusion
-engine, a genuine Type-D exclusion via CRT exhaustiveness, the graded
-ladder of exhaustiveness licenses, the open additive-prime milestones,
-and an honest record of retired framework-consequence skeletons.
+At main (78bbcff), SIDE-effects compiles an exclusion engine whose
+catalogue's exhaustiveness is a premise, a periodicity result over its
+own residue couplings, and a ladder of grades computed from evidence
+flags set by hand. Statements at 78bbcff:
+`theorem SIDE_exclusion (cat : ExhaustiveCatalogue X P) (h_none : NoneProduces X P cat.classes x) : ¬ (P x)`
+(`SIDEEffects/Phase15/SIDEFramework.lean` :45);
+`theorem no_type_d_conspiracies : IsEmpty TypeD`
+(`SIDEEffects/Phase15/Module1.lean` :154);
+`theorem RH_grade : grade RH_evidence = Grade.theorem_`
+(`SIDEEffects/ExhaustivenessLicense.lean` :114). The first takes
+`covers_all` as its premise; the second ranges over the file's own
+`StructuralCoupling`; the third reads `RH_evidence := ⟨true, true, true⟩`
+(:100), set by hand. `Milestones.lean` states three open conjectures as
+`Prop`s and proves none; `side_exclusion` (¬P → ¬P) stands retired in
+`Structural.lean`'s ledger.
 
 This kernel is the breadth-demonstration arm of the SIDE programme.
 The central Riemann Hypothesis proof lives in
@@ -66,19 +77,18 @@ Landau-Siegel, Artin). See the retirement ledger in the file header.
 
 ### `SIDEEffects/Milestones.lean` — what is open
 
-3 theorems, 3 sorrys (each at a marked analytic boundary), 0 axioms.
+3 definitions, each a `Prop` stating an open conjecture; 0 sorry (restated from `theorem ... := by sorry` at b648).
 
-| Theorem | Real type | Closes via |
+| Definition | Real type | Closes via |
 |:--------|:----------|:-----------|
 | `twin_primes_infinite` | `¬(∃ N, ∀ p > N, ¬(Prime p ∧ Prime (p+2)))` | Hardy-Littlewood asymptotic |
 | `goldbach` | `∀ n ≥ 4, Even n → ∃ p q prime, p + q = n` | Circle method |
 | `sophie_germain_infinite` | `¬(∃ N, ∀ p > N, ¬(Prime p ∧ Prime (2p+1)))` | Sieve density bounds |
 
-Each `sorry` sits at a clearly-marked analytic boundary, with a
-discharge-path comment naming the Mathlib infrastructure required. The
-structural Type-D exclusion these milestones rest on is the genuine
-`Module1.no_type_d_conspiracies`; what remains is the Mathlib bridge
-for the existence statement.
+Each definition carries a comment naming the Mathlib infrastructure a
+proof would need. No milestone uses `Module1.no_type_d_conspiracies` or
+`AddMult.no_type_d`, and none of the three conjectures follows from
+either in Lean (`Milestones.lean`, its status note).
 
 ## What this kernel does and does not claim
 
@@ -117,7 +127,7 @@ First build takes ~30 min (Mathlib dependency).
 ## How to close a milestone
 
 1. Identify the Mathlib lemma(s) that close the analytic boundary
-2. Replace the `sorry` with the proof using those lemmas
+2. Add a theorem concluding the milestone's `Prop`, proved with those lemmas
 3. Update README and version tag
 
 The migration history is the programme's progress record.
