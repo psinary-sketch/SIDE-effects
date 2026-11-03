@@ -47,14 +47,14 @@ hypothesis the module takes, not a result it claims.
 
 The abstract SIDE exclusion engine: `MechanismClass`,
 `ExhaustiveCatalogue` with `covers_all`, `NoneProduces`,
-`SIDE_exclusion`, and `side_bridge`. Genuine content, 0 sorry.
+`SIDE_exclusion`, and `side_bridge`. 0 sorry at 78bbcff.
 
 ### `SIDEEffects/Phase15/Module1.lean` — genuine Type-D exclusion
 
 `crt_exhaustiveness` (every structural residue coupling is realized by
 a modular coupling, via periodic lift) and
 `no_type_d_conspiracies : IsEmpty TypeD`. This is the real CRT-based
-no-conspiracy result. Genuine content, 0 sorry.
+no-conspiracy result. 0 sorry at 78bbcff.
 
 ### `SIDEEffects/Structural.lean` — logical core + retirement ledger
 
